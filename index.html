@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Haven Pay — Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Light (Sahara / paper-warm) */
+      --bg0:#efe6d7;
+      --bg1:#f6eee1;
+      --panel:#f3eadc;
+      --panel2:#efe4d4;
+      --line:rgba(0,0,0,.08);
+      --text:#151515;
+      --muted:rgba(0,0,0,.55);
+      --shadow: 0 18px 55px rgba(0,0,0,.18);
+      --radius:22px;
+      --pad:22px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --accent:#f39b4a;
+    }
+
+    [data-theme="dark"]{
+      /* Dark (quiet graphite) */
+      --bg0:#0b0d10;
+      --bg1:#12151a;
+      --panel:#101318;
+      --panel2:#0d1015;
+      --line:rgba(255,255,255,.09);
+      --text:#f4f6fb;
+      --muted:rgba(244,246,251,.58);
+      --shadow: 0 22px 70px rgba(0,0,0,.55);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 900px at 50% 35%, var(--bg1), var(--bg0));
+      display:grid;
+      place-items:center;
+    }
+
+    .wrap{width:min(760px, 92vw); display:grid; place-items:center;}
+    .panel{
+      width:min(540px, 92vw);
+      background:linear-gradient(180deg, var(--panel), var(--panel2));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      padding:16px var(--pad);
+      border-bottom:1px solid var(--line);
+      gap:18px;
+    }
+    .brand{
+      font-size:12px; letter-spacing:.14em;
+      text-transform:uppercase;
+      font-family:var(--mono);
+      opacity:.9;
+      line-height:1.2;
+    }
+
+    .router{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      font-family:var(--mono);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:12px;
+      color:var(--muted);
+      text-align:right;
+    }
+    .routerline{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .dot{
+      width:7px; height:7px; border-radius:99px;
+      background:var(--accent);
+      box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+      flex:0 0 auto;
+    }
+    .status{
+      opacity:.85;
+      letter-spacing:.10em;
+      white-space:nowrap;
+    }
+
+    .rows{padding:10px 0;}
+    .row{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px;
+      padding:14px var(--pad);
+      border-bottom:1px solid var(--line);
+      text-decoration:none;
+      color:inherit;
+    }
+    .row:last-child{border-bottom:none}
+    .title{
+      font-weight:600;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      font-size:14px;
+    }
+    .sub{
+      margin-top:4px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .chev{
+      color:var(--muted);
+      font-size:18px;
+      line-height:1;
+      transform:translateY(-1px);
+    }
+
+    .view{
+      display:none;
+      padding:16px var(--pad) 18px;
+      border-top:1px solid var(--line);
+      background:color-mix(in srgb, var(--panel) 55%, transparent);
+    }
+    .view.active{display:block}
+
+    .viewhead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:12px;
+    }
+    .viewtitle{
+      font-family:var(--mono);
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:color-mix(in srgb, var(--bg1) 30%, transparent);
+      font-family:var(--mono);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:11px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .pill .mini{
+      width:6px;height:6px;border-radius:99px;
+      background:var(--accent);
+      box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    .box{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 14px;
+      background:color-mix(in srgb, var(--panel2) 65%, transparent);
+    }
+    .box p{margin:0; font-size:12px; color:var(--muted); line-height:1.5}
+    .kv{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px 16px;
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.06em;
+    }
+    .kv b{
+      font-weight:600;
+      color:var(--text);
+      letter-spacing:.08em;
+    }
+
+    .bottom{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px var(--pad);
+      border-top:1px solid var(--line);
+      font-size:12px;
+      color:var(--muted);
+      font-family:var(--mono);
+    }
+    .contact{
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:var(--muted);
+      text-decoration:none;
+    }
+
+    /* Toggle (simple, no fuss) */
+    .toggle{
+      position:fixed;
+      top:18px; right:18px;
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:color-mix(in srgb, var(--panel) 65%, transparent);
+      backdrop-filter: blur(10px);
+      box-shadow:0 10px 30px rgba(0,0,0,.12);
+      user-select:none;
+    }
+    .toggle span{
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-family:var(--mono);
+      color:var(--muted);
+    }
+    .switch{
+      width:42px; height:24px; border-radius:999px;
+      border:1px solid var(--line);
+      background:color-mix(in srgb, var(--bg1) 35%, transparent);
+      position:relative;
+    }
+    .knob{
+      width:18px; height:18px; border-radius:99px;
+      position:absolute; top:50%; left:3px;
+      transform:translateY(-50%);
+      background:color-mix(in srgb, var(--text) 12%, white);
+      transition:left .18s ease;
+    }
+    [data-theme="dark"] .knob{ left:21px; }
+
+    /* Tiny hover (still calm) */
+    @media (hover:hover){
+      .row:hover{
+        background:color-mix(in srgb, var(--bg1) 18%, transparent);
+      }
+    }
+  </style>
+</head>
+
+<body data-theme="light">
+  <div class="toggle" id="toggle" role="button" aria-label="Toggle theme" tabindex="0">
+    <span id="label">LIGHT</span>
+    <div class="switch"><div class="knob"></div></div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div class="top">
+        <div class="brand">HAVENPAY</div>
+
+        <div class="router" aria-label="System status">
+          <div class="routerline">
+            <div class="dot" aria-hidden="true"></div>
+            <div>ROUTER</div>
+          </div>
+          <div class="routerline status" id="statusLine">STRIPE: DISCONNECTED • MODE: TEST</div>
+        </div>
+      </div>
+
+      <div class="rows" aria-label="Primary routes">
+        <a class="row" href="#pay" data-route="pay">
+          <div>
+            <div class="title">PAY</div>
+            <div class="sub">send • receive • settle</div>
+          </div>
+          <div class="chev">›</div>
+        </a>
+
+        <a class="row" href="#invoices" data-route="invoices">
+          <div>
+            <div class="title">INVOICES</div>
+            <div class="sub">request payment</div>
+          </div>
+          <div class="chev">›</div>
+        </a>
+
+        <a class="row" href="#activity" data-route="activity">
+          <div>
+            <div class="title">ACTIVITY</div>
+            <div class="sub">system log</div>
+          </div>
+          <div class="chev">›</div>
+        </a>
+
+        <a class="row" href="#vault" data-route="vault">
+          <div>
+            <div class="title">VAULT</div>
+            <div class="sub">balances • keys • limits</div>
+          </div>
+          <div class="chev">›</div>
+        </a>
+      </div>
+
+      <!-- Views (minimal placeholders, no framework) -->
+      <section class="view" id="view-pay" aria-label="Pay view">
+        <div class="viewhead">
+          <div class="viewtitle">PAY</div>
+          <div class="pill"><span class="mini"></span><span>READY</span></div>
+        </div>
+        <div class="box">
+          <p>Operator note: this is the send/receive surface. Stripe link-out and hosted checkout land here first.</p>
+          <div class="kv">
+            <div><b>DEFAULT</b></div><div>HOSTED</div>
+            <div><b>FLOW</b></div><div>CHECKOUT</div>
+            <div><b>STATUS</b></div><div>LOCKED</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-invoices" aria-label="Invoices view">
+        <div class="viewhead">
+          <div class="viewtitle">INVOICES</div>
+          <div class="pill"><span class="mini"></span><span>DRAFT</span></div>
+        </div>
+        <div class="box">
+          <p>Request payment. Next: create invoice, list invoices, copy payment link, mark paid.</p>
+          <div class="kv">
+            <div><b>MODEL</b></div><div>MONTHLY</div>
+            <div><b>AMOUNT</b></div><div>$3,333</div>
+            <div><b>STATE</b></div><div>PENDING</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-activity" aria-label="Activity view">
+        <div class="viewhead">
+          <div class="viewtitle">ACTIVITY</div>
+          <div class="pill"><span class="mini"></span><span>LOG</span></div>
+        </div>
+        <div class="box">
+          <p>System log. Next: show events (invoice created, payment received, payout sent).</p>
+          <div class="kv">
+            <div><b>LAST</b></div><div>—</div>
+            <div><b>EVENTS</b></div><div>0</div>
+            <div><b>SYNC</b></div><div>OFF</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-vault" aria-label="Vault view">
+        <div class="viewhead">
+          <div class="viewtitle">VAULT</div>
+          <div class="pill"><span class="mini"></span><span>SAFE</span></div>
+        </div>
+        <div class="box">
+          <p>Balances, keys, limits. Next: show available balance, payouts, and basic guardrails.</p>
+          <div class="kv">
+            <div><b>BALANCE</b></div><div>—</div>
+            <div><b>PAYOUTS</b></div><div>—</div>
+            <div><b>LIMITS</b></div><div>—</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="bottom">
+        <div>© 2026 HAVENPAY</div>
+        <a class="contact" href="#contact">CONTACT</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme
+    const root = document.body;
+    const label = document.getElementById("label");
+    const toggle = document.getElementById("toggle");
+
+    const saved = localStorage.getItem("havenpay-theme");
+    if (saved) root.setAttribute("data-theme", saved);
+
+    function syncLabel(){
+      label.textContent = root.getAttribute("data-theme").toUpperCase();
+    }
+    syncLabel();
+
+    function flipTheme(){
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      localStorage.setItem("havenpay-theme", next);
+      syncLabel();
+    }
+
+    toggle.addEventListener("click", flipTheme);
+    toggle.addEventListener("keydown", (e)=> {
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flipTheme(); }
+    });
+
+    // Minimal routing (hash -> view)
+    const routes = ["pay","invoices","activity","vault"];
+    function show(route){
+      routes.forEach(r=>{
+        const el = document.getElementById(`view-${r}`);
+        if (!el) return;
+        el.classList.toggle("active", r === route);
+      });
+      // keep scroll calm
+      document.querySelector(".panel").scrollIntoView({behavior:"smooth", block:"center"});
+    }
+
+    function routeFromHash(){
+      const h = (location.hash || "#pay").replace("#","").trim().toLowerCase();
+      return routes.includes(h) ? h : "pay";
+    }
+
+    window.addEventListener("hashchange", ()=> show(routeFromHash()));
+    show(routeFromHash());
+
+    // Status line (placeholder; wire to Stripe later)
+    const statusLine = document.getElementById("statusLine");
+    // You can flip these once Stripe auth is wired:
+    const stripeConnected = false;
+    const mode = "TEST"; // TEST | LIVE
+    statusLine.textContent = `STRIPE: ${stripeConnected ? "CONNECTED" : "DISCONNECTED"} • MODE: ${mode}`;
+  </script>
+</body>
+</html>
