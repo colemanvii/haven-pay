@@ -3,152 +3,319 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HAVEN SYSTEMS // TERMINAL 7.01</title>
+  <title>Haven Pay // Tom7</title>
+
   <style>
-    :root {
-      --bg: #e6ddd0;
-      --tray: #d6c9b8;
-      --ink: #1f1b16;
-      --sig-green: #4bff9a;
-      --sig-glow: rgba(75, 255, 154, 0.2);
-      --mono: "Input Mono", "Courier New", monospace;
-      --hair: rgba(0,0,0,0.1);
+    :root{
+      --bg1:#f2ebe0; --bg2:#e8ddd0;
+      --tray:#dfd3c3;
+      --panel:#ece1cf;
+      --ink:#1a1815; --muted:#7a7066;
+      --crt-green:#51ff9d;
+      --crt-glow: rgba(81,255,157,.15);
+      --shadow: 0 40px 100px rgba(0,0,0,.15);
+      --r:24px; --r2:14px;
+      --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+      --serif: "Times New Roman", Times, serif;
     }
 
-    * { box-sizing: border-box; cursor: crosshair; }
-    body {
-      margin: 0; background: var(--bg); color: var(--ink);
-      font-family: var(--mono); font-weight: 700; font-size: 11px;
-      display: grid; place-items: center; height: 100vh;
-      letter-spacing: 0.12em; text-transform: uppercase;
+    *{box-sizing:border-box}
+    html,body{height:100%; overflow:hidden; background:var(--bg1)}
+    body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,sans-serif;
+      color:var(--ink);
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at 50% 0%, #fff9f0 0%, transparent 70%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      cursor: crosshair;
     }
 
-    /* System Grain - No Gradients */
-    body:before {
-      content: ""; position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-      pointer-events: none;
+    body:before{
+      content:""; position:fixed; inset:-50%;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+      opacity:.08; pointer-events:none; mix-blend-mode:multiply;
     }
 
-    .frame {
-      width: 960px; padding: 40px;
-      background: var(--tray);
-      border: 1px solid var(--hair);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+    .wrap{ width:min(1020px,94vw); }
+    .tray{
+      background: linear-gradient(180deg, rgba(255,255,255,.4), rgba(255,255,255,0)), var(--tray);
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:24px;
     }
 
-    .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
-
-    /* SIGNAL PANEL */
-    .crt {
-      background: #0a0c0b; height: 400px; padding: 25px;
-      border: 2px solid #1a1c1b; position: relative;
-      display: flex; flex-direction: column;
+    .topbar{
+      display:flex; justify-content:space-between;
+      padding:0 8px 20px;
+      font:700 9px var(--mono);
+      letter-spacing:.25em;
+      text-transform:uppercase;
+      color:var(--muted);
+      user-select:none;
     }
 
-    .crt:after {
-      content: ""; position: absolute; inset: 0;
-      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 2px);
-      pointer-events: none;
+    .grid{ display:grid; grid-template-columns:1.2fr .8fr; gap:20px; }
+    @media (max-width:860px){ .grid{ grid-template-columns:1fr; } html,body{overflow:auto;} }
+
+    /* LEFT: TOM7 TERMINAL */
+    .crt{
+      border-radius:var(--r);
+      background:#080a09;
+      border:1px solid #1a1c1b;
+      padding:24px;
+      position:relative;
+      overflow:hidden;
+      min-height:380px;
+      display:flex;
+      flex-direction:column;
     }
 
-    .readout {
-      color: var(--sig-green); text-shadow: 0 0 5px var(--sig-glow);
-      line-height: 1.8; flex-grow: 1; overflow: hidden;
+    .crt:after{
+      content:""; position:absolute; inset:0;
+      background:
+        linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%),
+        linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03));
+      background-size:100% 3px, 3px 100%;
+      pointer-events:none;
     }
 
-    /* PORTS (NOT TOGGLES) */
-    .port-group { display: grid; gap: 20px; }
-    
-    .port {
-      border: 1px solid var(--hair); background: rgba(0,0,0,0.03);
-      padding: 20px; display: flex; align-items: center; justify-content: space-between;
+    .crtHeader{
+      display:flex; justify-content:space-between;
+      margin-bottom:20px;
+      border-bottom:1px solid rgba(81,255,157,.15);
+      padding-bottom:10px;
     }
 
-    .status-led {
-      width: 6px; height: 6px; background: #c2b7a8;
-      margin-right: 12px; display: inline-block;
-    }
-    
-    .port[data-active="true"] .status-led {
-      background: #c8a46b; box-shadow: 0 0 8px rgba(200,164,107,0.4);
+    .crtTitle{
+      font:700 10px var(--mono);
+      color:var(--crt-green);
+      letter-spacing:.2em;
+      text-transform:uppercase;
     }
 
-    .engage-btn {
-      background: var(--ink); color: var(--bg);
-      border: none; padding: 10px 20px;
-      font: 700 10px var(--mono); letter-spacing: 0.2em;
-      transition: transform 0.1s steps(2);
+    .crtBody{
+      font:500 13px/1.6 var(--mono);
+      color:var(--crt-green);
+      text-shadow:0 0 8px var(--crt-glow);
+      flex-grow:1;
+      white-space:pre-line;
     }
 
-    .engage-btn:active { transform: translateY(2px); }
+    .cursor{
+      display:inline-block;
+      width:8px; height:15px;
+      background:var(--crt-green);
+      margin-left:6px;
+      animation:blink 1s infinite;
+      vertical-align:middle;
+    }
+    @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:0} }
 
-    .header-meta { margin-bottom: 30px; border-bottom: 1px solid var(--hair); padding-bottom: 10px; opacity: 0.6; }
+    /* RIGHT: PANEL */
+    .card{
+      border-radius:var(--r);
+      background: linear-gradient(180deg, #fff, transparent), var(--panel);
+      border:1px solid rgba(0,0,0,.1);
+      padding:24px;
+    }
 
-    @keyframes scan { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
+    h1{
+      font-family:var(--serif);
+      font-weight:400;
+      font-style:italic;
+      font-size:26px;
+      margin:0 0 10px;
+    }
+
+    p{
+      font-size:13px;
+      color:var(--muted);
+      margin:0 0 24px;
+      line-height:1.5;
+    }
+
+    .stack{ display:grid; gap:12px; }
+
+    .conn{
+      background: rgba(255,255,255,0.4);
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: var(--r2);
+      padding: 14px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+
+    .conn-label{
+      font:800 10px var(--mono);
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      user-select:none;
+    }
+
+    .pill{
+      background: var(--ink);
+      color:#fff;
+      border:none;
+      border-radius:20px;
+      padding:8px 16px;
+      font:700 9px var(--mono);
+      letter-spacing:.08em;
+      cursor:pointer;
+      transition:.15s;
+      text-transform:uppercase;
+    }
+    .pill:hover{ transform:scale(1.03); }
+
+    /* Quiet mechanical states */
+    .pill.is-dim{ opacity:.6; pointer-events:none; }
+    .pill.is-action{ opacity:1; }
+
+    .footer{
+      margin-top:30px;
+      font:700 8px var(--mono);
+      color:var(--muted);
+      letter-spacing:.2em;
+      text-align:center;
+      user-select:none;
+    }
   </style>
 </head>
+
 <body>
+  <div class="wrap">
+    <div class="tray">
+      <div class="topbar">
+        <span>Haven Systems / 7.01</span>
+        <span>Nashville, TN // 36.1627° N</span>
+      </div>
 
-<div class="frame">
-  <div class="header-meta">
-    HAVEN SYSTEMS OF AMERICA // EST. 1974 // SESSION: 00-392-COL
-  </div>
+      <div class="grid">
+        <!-- LEFT: TOM7 -->
+        <div class="crt">
+          <div class="crtHeader">
+            <div class="crtTitle">TOM7 // SYSTEM_VOICE</div>
+            <div class="crtTitle" style="opacity:.5">ACTIVE</div>
+          </div>
+          <div class="crtBody" id="tom7-readout"></div>
+        </div>
 
-  <div class="grid">
-    <div class="crt">
-      <div style="font-size:9px; color:var(--sig-green); margin-bottom:20px; opacity:0.7;">SYSTEM_LOG // TOM7</div>
-      <div class="readout" id="readout">
-        > INITIALIZING RAILS...<br>
-        > VOLTAGE STABILIZED<br>
-        > GERMAN-TOWN_ARCHIVE: MOUNTED<br>
-        > SIGNAL: ALIGNED<br>
-        > MANTRA: YUKKURI TO
+        <!-- RIGHT: HAVEN PAY -->
+        <div class="card">
+          <h1>Haven Pay</h1>
+          <p>Your creative capital rails.<br>Restrained. Reliable. Quiet.</p>
+
+          <div class="stack">
+            <div class="conn" id="stripe-conn">
+              <span class="conn-label" id="stripe-label">Stripe Rail</span>
+              <button class="pill" id="stripe-connect">CONNECT</button>
+            </div>
+
+            <div class="conn" style="opacity:.7">
+              <span class="conn-label">Treasury / Bank</span>
+              <button class="pill is-dim">STUBBED</button>
+            </div>
+
+            <div class="conn" style="opacity:.5">
+              <span class="conn-label">Wallet / Eth</span>
+              <button class="pill is-dim">STUBBED</button>
+            </div>
+          </div>
+
+          <div class="footer">PART OF THE HAVEN IP HOLDING GROUP</div>
+        </div>
       </div>
     </div>
-
-    <div class="port-group">
-      <div style="padding-bottom: 10px; border-bottom: 1px solid var(--ink);">CONTROL_SURFACE</div>
-      
-      <div class="port" data-active="false">
-        <div><span class="status-led"></span>STRIPE_RAIL</div>
-        <button class="engage-btn">ENGAGE</button>
-      </div>
-
-      <div class="port" data-active="false">
-        <div><span class="status-led"></span>BANK_LINK</div>
-        <button class="engage-btn">ENGAGE</button>
-      </div>
-
-      <div class="port" data-active="false">
-        <div><span class="status-led"></span>WALLET_V2</div>
-        <button class="engage-btn">ENGAGE</button>
-      </div>
-
-      <div style="margin-top:auto; font-size:9px; opacity:0.5; line-height:1.4;">
-        NOTICE: ALL TRANSACTIONS ARE FINAL.<br>
-        KEEP THE BOARD QUIET.
-      </div>
-    </div>
   </div>
-</div>
 
-<script>
-  // Mechanical readout simulation
-  const lines = [
-    "> READY FOR OPERATOR",
-    "> AWAITING CONNECTION",
-    "> WESTOVER_SIGNAL: STANDBY",
-    "> HIS MERCIES ARE NEW EVERY MORNING"
-  ];
-  let i = 0;
-  setInterval(() => {
-    if(i < lines.length) {
-      document.getElementById('readout').innerHTML += `<br>> ${lines[i]}`;
-      i++;
+  <script>
+    // ====== CONFIG ======
+    // For local dev: run backend on http://localhost:3000
+    // After deploy: set to your Railway/Render URL, e.g. https://haven-pay-bridge.up.railway.app
+    const BACKEND_URL = "http://localhost:3000";
+    const USER_EMAIL = "colecalfee@gmail.com";
+
+    const readout = document.getElementById("tom7-readout");
+    const stripeBtn = document.getElementById("stripe-connect");
+    const stripeLabel = document.getElementById("stripe-label");
+
+    function setReadout(lines, withCursor = true) {
+      readout.innerHTML = "";
+      lines.forEach((t) => {
+        const line = document.createElement("div");
+        line.textContent = t;
+        line.style.marginBottom = "8px";
+        readout.appendChild(line);
+      });
+      if (withCursor) {
+        const cursor = document.createElement("span");
+        cursor.className = "cursor";
+        readout.appendChild(cursor);
+      }
     }
-  }, 2000);
-</script>
 
+    // Initial boot message (quiet)
+    setReadout([
+      "Initializing rails…",
+      "Standby.",
+      "Awaiting Stripe signal."
+    ]);
+
+    async function syncHaven() {
+      try {
+        const url = `${BACKEND_URL}/api/summary?email=${encodeURIComponent(USER_EMAIL)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!data || data.error) throw new Error(data?.error || "bad_response");
+
+        const name = (data.name || "OPERATOR");
+        const sub = String(data.subscription_status || "none").toUpperCase();
+        const open = Number(data.open_invoice_count || 0);
+
+        // Right panel: Stripe button behavior
+        if (data.next_invoice && data.next_invoice.url) {
+          stripeLabel.textContent = "Stripe Rail (Invoice)";
+          stripeBtn.textContent = "PAY NOW";
+          stripeBtn.classList.add("is-action");
+          stripeBtn.classList.remove("is-dim");
+          stripeBtn.onclick = () => window.open(data.next_invoice.url, "_blank", "noopener,noreferrer");
+        } else {
+          stripeLabel.textContent = "Stripe Rail";
+          stripeBtn.textContent = "CONNECTED";
+          stripeBtn.classList.remove("is-action");
+          stripeBtn.classList.add("is-dim");
+          stripeBtn.onclick = null;
+        }
+
+        // Tom7 readout: signal only
+        const lines = [
+          `Good morning, ${name}.`,
+          `SUBSCRIPTION: ${sub}`,
+          `OPEN_INVOICES: ${open}`,
+          "SYSTEM: READY"
+        ];
+        setReadout(lines);
+
+      } catch (err) {
+        console.error("SIGNAL_LOSS:", err);
+        stripeLabel.textContent = "Stripe Rail";
+        stripeBtn.textContent = "OFFLINE";
+        stripeBtn.classList.remove("is-action");
+        stripeBtn.classList.add("is-dim");
+        stripeBtn.onclick = null;
+
+        setReadout([
+          "SIGNAL_LOSS.",
+          "CHECK_BACKEND_CONNECTION.",
+          "STANDBY."
+        ]);
+      }
+    }
+
+    // Sync once on load
+    syncHaven();
+  </script>
 </body>
 </html>
