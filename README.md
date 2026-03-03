@@ -1,79 +1,89 @@
-# Haven Pay
+### **GitHub README: Haven Pay // Archive 7.01**
 
-**Haven Pay** is a calm financial control panel for operators and creative individuals.
-
-It is a minimal console interface layered on top of Stripe — designed to reduce noise, increase clarity, and provide orientation in the modern financial environment.
+This manifest serves as the technical and philosophical specification for **Haven Pay**. It is designed as a restrained control surface for creative capital.
 
 ---
 
-## Philosophy
+#### **I. Premise & Problem**
 
-Most financial tools are loud.  
-Haven Pay is quiet.
+* 
+**Infrastructure over Dashboards**: Independent creators do not need more dashboards; they need clarity, trust, and infrastructure that disappears.
 
-Built around:
 
-- Clarity over clutter  
-- Control over complexity  
-- Orientation over overwhelm  
-- Calm surfaces for serious operators  
+* 
+**Noise Reduction**: Modern payment software is loud, utilizing notifications, charts, and optimization loops that shift attention from craft to metrics.
 
-The console acts as a router — directing flows of money with intention.
 
----
+* 
+**Stability**: Capital flow should be stable and predictable, not stimulating or performance-based.
 
-## Current Scope (MVP)
 
-- Static console shell
-- Light / Dark mode toggle
-- Hash-based routing (no framework)
-- Stripe status placeholder
-- Four primary routes:
-  - `PAY`
-  - `INVOICES`
-  - `ACTIVITY`
-  - `VAULT`
 
-No backend yet.  
-No authentication yet.  
-No framework yet.  
+#### **II. Technical Architecture**
 
-Pure surface. Pure structure.
+* 
+**Source of Truth**: The system relies entirely on the **Stripe API**.
 
----
 
-## Tech Stack
+* 
+**The Bridge**: A minimal **Node/Express** service connects the API to the interface.
 
-- Vanilla HTML
-- CSS (custom properties / theme system)
-- Minimal JavaScript
-- Stripe (planned integration)
 
-No dependencies.  
-No build step.  
+* 
+**The Interface**: A static **HTML** control panel designed for operation, not browsing.
 
----
 
-## Roadmap
+* 
+**Lean Build**: No database is required for the MVP, and there are no financial abstraction layers.
 
-- Stripe authentication
-- Invoice creation + listing
-- Hosted checkout routing
-- Activity log (event feed)
-- Vault: balances, payouts, limits
-- Operator settings
-- Multi-client console layer
 
-Long term: Haven Pay becomes a modular financial control surface inside the broader Haven system.
+
+#### **III. Interface Philosophy**
+
+* 
+**Deliberate Aesthetic**: The system uses **CRT green**, monospace type, and a crosshair cursor to reinforce a focused environment.
+
+
+* 
+**Signal-Only Output**: The left panel speaks only in essential signals, such as **SUBSCRIPTION: ACTIVE** and **SYSTEM: READY**.
+
+
+* 
+**Sparse Encouragement**: The user's name is used rarely; when spoken, it carries weight.
+
+
+
+#### **IV. The "Quiet" Filter**
+
+All future directions—including **Subscription visibility**, **Billing portal access**, and **Optional Bitcoin rails**—must pass a single mandatory filter: **"Does this preserve quiet?"**. If it does not, it does not ship.
 
 ---
 
-## Status
+### **System Log Logic (Pseudo-Code)**
 
-Mode: TEST  
-Stripe: DISCONNECTED  
-Stage: Early MVP  
+To maintain the "Quiet Surface", the system log should only trigger on state changes. Here is the logic for the Tom7 output:
 
----
+```javascript
+// TOM7 // SIGNAL_LOGIC
+function updateSignal(data) {
+  const log = document.getElementById('tom7-readout');
+  
+  // Terminal speaks only when spoken to or when status shifts
+  const status = data.subscription_status.toUpperCase(); [cite_start]// [cite: 51]
+  const invoices = data.open_invoice_count; [cite_start]// [cite: 51]
 
-© 2026 Haven Pay
+  log.innerHTML = `
+    > SUBSCRIPTION: ${status}
+    > OPEN_INVOICES: ${invoices}
+    > SYSTEM: READY
+  `; [cite_start]// [cite: 51, 80]
+  
+  [cite_start]// Rare Name Usage: Only on initial authorized handshake [cite: 53]
+  if (data.is_first_session) {
+    console.log(`AUTHENTICATED: OPERATOR_${data.name.toUpperCase()}`);
+  }
+}
+
+```
+
+The rails remain steady. System ready. 
