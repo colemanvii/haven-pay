@@ -3,504 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Haven Pay</title>
+  <title>HAVEN SYSTEMS // TERMINAL 7.01</title>
   <style>
-    :root{
-      --bg1:#f6efe3; --bg2:#efe6d8;
-      --tray:#e7dccb; --tray2:#dccfb9;
-      --panel:#f2eadc; --panel2:#ece1cf;
-      --ink:#1f1b16; --muted:#6f655c; --hair:#d6c9b8;
-
-      --green:#4bff9a;
-      --green2:#2eea84;
-
-      --shadow: 0 30px 80px rgba(0,0,0,.12);
-      --shadow2: 0 14px 34px rgba(0,0,0,.10);
-      --r:22px; --r2:16px; --r3:12px;
-
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--sans);
-      color:var(--ink);
-      background:
-        radial-gradient(1200px 800px at 25% 10%, rgba(255,255,255,.55), rgba(255,255,255,0) 58%),
-        radial-gradient(1000px 700px at 70% 30%, rgba(255,255,255,.25), rgba(255,255,255,0) 60%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-    }
-    /* gentle grain */
-    body:before{
-      content:"";
-      position:fixed; inset:-20%;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
-      opacity:.14;
-      mix-blend-mode:multiply;
-      pointer-events:none;
-      transform:rotate(1.5deg);
+    :root {
+      --bg: #e6ddd0;
+      --tray: #d6c9b8;
+      --ink: #1f1b16;
+      --sig-green: #4bff9a;
+      --sig-glow: rgba(75, 255, 154, 0.2);
+      --mono: "Input Mono", "Courier New", monospace;
+      --hair: rgba(0,0,0,0.1);
     }
 
-    .wrap{ width:min(980px, 92vw); padding:28px 18px; }
-
-    .tray{
-      background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0)) , linear-gradient(180deg,var(--tray),var(--tray2));
-      border:1px solid rgba(0,0,0,.06);
-      border-radius: 26px;
-      box-shadow: var(--shadow);
-      padding:18px;
-      position:relative;
-    }
-    .tray:after{
-      content:"";
-      position:absolute; inset:0;
-      border-radius:26px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.04);
-      pointer-events:none;
+    * { box-sizing: border-box; cursor: crosshair; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: var(--mono); font-weight: 700; font-size: 11px;
+      display: grid; place-items: center; height: 100vh;
+      letter-spacing: 0.12em; text-transform: uppercase;
     }
 
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:2px 4px 16px;
-      color:var(--muted);
-      font: 600 10px/1 var(--mono);
-      letter-spacing:.18em;
-      text-transform:uppercase;
-    }
-    .topbar .tag{
-      opacity:.85;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .topbar .right{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      white-space:nowrap;
-    }
-    .dot{opacity:.55}
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:16px;
-      align-items:stretch;
+    /* System Grain - No Gradients */
+    body:before {
+      content: ""; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+      pointer-events: none;
     }
 
-    /* left "crt" panel */
-    .crt{
-      border-radius: var(--r);
-      background: radial-gradient(900px 520px at 40% 20%, rgba(70,255,160,.14), rgba(0,0,0,0) 55%),
-                  linear-gradient(180deg, #0c1411, #070d0b);
-      border:1px solid rgba(255,255,255,.06);
-      box-shadow: var(--shadow2);
-      padding:18px 18px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .crt:before{
-      content:"";
-      position:absolute; inset:0;
-      background: repeating-linear-gradient(
-        180deg,
-        rgba(255,255,255,.03) 0px,
-        rgba(255,255,255,.03) 1px,
-        rgba(0,0,0,0) 3px,
-        rgba(0,0,0,0) 6px
-      );
-      opacity:.18;
-      pointer-events:none;
-      mix-blend-mode:overlay;
-    }
-    .crtHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      margin-bottom:14px;
-    }
-    .crtTitle{
-      font: 700 10px/1 var(--mono);
-      letter-spacing:.24em;
-      text-transform:uppercase;
-      color: rgba(75,255,154,.85);
-    }
-    .crtSub{
-      font: 600 10px/1 var(--mono);
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color: rgba(75,255,154,.55);
-      text-align:right;
-    }
-    .crtBody{
-      font: 600 12px/1.55 var(--mono);
-      letter-spacing:.06em;
-      color: rgba(75,255,154,.82);
-      text-shadow: 0 0 14px rgba(46,234,132,.18);
-      white-space:pre-wrap;
+    .frame {
+      width: 960px; padding: 40px;
+      background: var(--tray);
+      border: 1px solid var(--hair);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.05);
     }
 
-    /* right card */
-    .card{
-      border-radius: var(--r);
-      background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.0)) , linear-gradient(180deg,var(--panel),var(--panel2));
-      border:1px solid rgba(0,0,0,.07);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-      position:relative;
-    }
-    .card:after{
-      content:"";
-      position:absolute; inset:0;
-      border-radius: var(--r);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.03);
-      pointer-events:none;
-    }
-    .cardTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 16px 12px;
-      border-bottom:1px solid var(--hair);
-    }
-    .cardTop .label{
-      font: 700 10px/1 var(--mono);
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
-    .cardTop .mode{
-      font: 700 10px/1 var(--mono);
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      color:var(--muted);
-      opacity:.85;
+    .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
+
+    /* SIGNAL PANEL */
+    .crt {
+      background: #0a0c0b; height: 400px; padding: 25px;
+      border: 2px solid #1a1c1b; position: relative;
+      display: flex; flex-direction: column;
     }
 
-    .welcome{
-      padding:16px;
-    }
-    .welcome h1{
-      margin:0 0 8px 0;
-      font: 650 18px/1.1 var(--sans);
-      letter-spacing:.01em;
-    }
-    .welcome p{
-      margin:0;
-      color:var(--muted);
-      font: 500 12px/1.4 var(--sans);
+    .crt:after {
+      content: ""; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 2px);
+      pointer-events: none;
     }
 
-    .stack{
-      padding:0 16px 16px;
-      display:grid;
-      gap:10px;
+    .readout {
+      color: var(--sig-green); text-shadow: 0 0 5px var(--sig-glow);
+      line-height: 1.8; flex-grow: 1; overflow: hidden;
     }
 
-    .conn{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border-radius: var(--r2);
-      border:1px solid rgba(0,0,0,.08);
-      background: rgba(255,255,255,.26);
-      padding:12px 12px;
-    }
-    .connLeft{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .connTitle{
-      font: 750 11px/1 var(--mono);
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      opacity:.9;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .connMeta{
-      font: 600 10px/1 var(--mono);
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      opacity:.9;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      height:32px;
-      padding:0 12px;
-      border-radius:999px;
-      border:1px solid rgba(0,0,0,.10);
-      background: rgba(255,255,255,.35);
-      cursor:pointer;
-      user-select:none;
-      transition: transform .14s ease, background .14s ease, opacity .14s ease;
-      font: 800 10px/1 var(--mono);
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:var(--ink);
-      white-space:nowrap;
-    }
-    .pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.50); }
-    .pill:active{ transform: translateY(0); }
-
-    .led{
-      width:8px; height:8px; border-radius:999px;
-      background:#c9b8a4;
-      box-shadow: 0 0 0 3px rgba(201,184,164,.20);
-      flex:0 0 auto;
-    }
-    .conn[data-connected="1"] .led{
-      background:#c8a46b;
-      box-shadow: 0 0 0 3px rgba(200,164,107,.22);
+    /* PORTS (NOT TOGGLES) */
+    .port-group { display: grid; gap: 20px; }
+    
+    .port {
+      border: 1px solid var(--hair); background: rgba(0,0,0,0.03);
+      padding: 20px; display: flex; align-items: center; justify-content: space-between;
     }
 
-    .consolebar{
-      margin-top:14px;
-      border-radius: 18px;
-      border:1px solid rgba(0,0,0,.07);
-      background: rgba(0,0,0,.08);
-      padding:10px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+    .status-led {
+      width: 6px; height: 6px; background: #c2b7a8;
+      margin-right: 12px; display: inline-block;
     }
-    .slots{
-      display:flex; gap:6px; align-items:center; min-width:0;
-      overflow:hidden;
-    }
-    .slot{
-      width:38px; height:14px;
-      border-radius:5px;
-      background: rgba(255,255,255,.38);
-      border:1px solid rgba(0,0,0,.08);
-      opacity:.65;
-      flex:0 0 auto;
-    }
-    .slot.on{
-      background: rgba(255,168,56,.9);
-      border-color: rgba(0,0,0,.10);
-      opacity:.95;
-      box-shadow: 0 0 0 2px rgba(255,168,56,.18);
-    }
-    .consoleLabel{
-      font: 800 10px/1 var(--mono);
-      letter-spacing:.20em;
-      text-transform:uppercase;
-      color: rgba(31,27,22,.65);
-      white-space:nowrap;
+    
+    .port[data-active="true"] .status-led {
+      background: #c8a46b; box-shadow: 0 0 8px rgba(200,164,107,0.4);
     }
 
-    .tiny{
-      font: 650 10px/1 var(--mono);
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:var(--muted);
-      opacity:.9;
+    .engage-btn {
+      background: var(--ink); color: var(--bg);
+      border: none; padding: 10px 20px;
+      font: 700 10px var(--mono); letter-spacing: 0.2em;
+      transition: transform 0.1s steps(2);
     }
 
-    @media (max-width: 860px){
-      .grid{ grid-template-columns: 1fr; }
-    }
+    .engage-btn:active { transform: translateY(2px); }
+
+    .header-meta { margin-bottom: 30px; border-bottom: 1px solid var(--hair); padding-bottom: 10px; opacity: 0.6; }
+
+    @keyframes scan { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="tray" role="application" aria-label="Haven Pay">
-      <div class="topbar">
-        <div class="tag">HAVEN PAY</div>
-        <div class="right">
-          <span class="tag" id="who">operator</span>
-          <span class="dot">|</span>
-          <span class="tag" id="statusline">mode: test</span>
-        </div>
+
+<div class="frame">
+  <div class="header-meta">
+    HAVEN SYSTEMS OF AMERICA // EST. 1974 // SESSION: 00-392-COL
+  </div>
+
+  <div class="grid">
+    <div class="crt">
+      <div style="font-size:9px; color:var(--sig-green); margin-bottom:20px; opacity:0.7;">SYSTEM_LOG // TOM7</div>
+      <div class="readout" id="readout">
+        > INITIALIZING RAILS...<br>
+        > VOLTAGE STABILIZED<br>
+        > GERMAN-TOWN_ARCHIVE: MOUNTED<br>
+        > SIGNAL: ALIGNED<br>
+        > MANTRA: YUKKURI TO
+      </div>
+    </div>
+
+    <div class="port-group">
+      <div style="padding-bottom: 10px; border-bottom: 1px solid var(--ink);">CONTROL_SURFACE</div>
+      
+      <div class="port" data-active="false">
+        <div><span class="status-led"></span>STRIPE_RAIL</div>
+        <button class="engage-btn">ENGAGE</button>
       </div>
 
-      <div class="grid">
-        <!-- LEFT: restrained “console” readout -->
-        <div class="crt" aria-label="Haven Systems Readout">
-          <div class="crtHeader">
-            <div class="crtTitle">HAVEN SYSTEMS OF AMERICA</div>
-            <div class="crtSub" id="crtSub">ROUTER • READY</div>
-          </div>
-          <div class="crtBody" id="crtBody"></div>
-        </div>
+      <div class="port" data-active="false">
+        <div><span class="status-led"></span>BANK_LINK</div>
+        <button class="engage-btn">ENGAGE</button>
+      </div>
 
-        <!-- RIGHT: welcome + connectors -->
-        <div class="card" aria-label="Connectors">
-          <div class="cardTop">
-            <div class="label">INSERT ACCESS CARD</div>
-            <div class="mode" id="modePill">TEST</div>
-          </div>
+      <div class="port" data-active="false">
+        <div><span class="status-led"></span>WALLET_V2</div>
+        <button class="engage-btn">ENGAGE</button>
+      </div>
 
-          <div class="welcome">
-            <h1>Welcome to Haven Pay</h1>
-            <p>Connect your rails. Keep the surface quiet.</p>
-          </div>
-
-          <div class="stack">
-            <div class="conn" id="stripeConn" data-connected="0">
-              <div class="connLeft">
-                <div class="connTitle">Connect to Stripe</div>
-                <div class="connMeta"><span class="led" aria-hidden="true"></span> <span id="stripeMeta">disconnected</span></div>
-              </div>
-              <button class="pill" type="button" data-connect="stripe">CONNECT</button>
-            </div>
-
-            <div class="conn" id="bankConn" data-connected="0">
-              <div class="connLeft">
-                <div class="connTitle">Connect to Bank</div>
-                <div class="connMeta"><span class="led" aria-hidden="true"></span> <span id="bankMeta">not linked</span></div>
-              </div>
-              <button class="pill" type="button" data-connect="bank">CONNECT</button>
-            </div>
-
-            <div class="conn" id="mmConn" data-connected="0">
-              <div class="connLeft">
-                <div class="connTitle">Connect to MetaMask</div>
-                <div class="connMeta"><span class="led" aria-hidden="true"></span> <span id="mmMeta">not detected</span></div>
-              </div>
-              <button class="pill" type="button" data-connect="metamask">CONNECT</button>
-            </div>
-
-            <div class="consolebar" aria-label="Console Bar">
-              <div class="slots" aria-hidden="true">
-                <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-                <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-                <div class="slot on"></div><div class="slot on"></div><div class="slot on"></div><div class="slot on"></div>
-              </div>
-              <div class="consoleLabel">HAVEN CONSOLE // ACTIVE</div>
-            </div>
-
-            <div class="tiny" id="footHint">connect at least one rail to proceed</div>
-          </div>
-        </div>
+      <div style="margin-top:auto; font-size:9px; opacity:0.5; line-height:1.4;">
+        NOTICE: ALL TRANSACTIONS ARE FINAL.<br>
+        KEEP THE BOARD QUIET.
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    const $ = (s) => document.querySelector(s);
-
-    // --- CRT text (restrained, not personal) ---
-    function setCrt(){
-      const d = new Date();
-      const date = d.toLocaleDateString(undefined, { weekday:"short", year:"numeric", month:"short", day:"2-digit" });
-
-      const lines = [
-        `DATE: ${date}`,
-        `MODE: Creator`,
-        `SIGNAL: Aligned`,
-        ``,
-        `LAW: WIN = What's Important Now`,
-        `ANCHOR: His mercies are new every morning`,
-        `MANTRA: ゆっくりと、自分らしく`,
-        ``,
-        `SYSTEM NOTE:`,
-        `Keep the board quiet. One move at a time.`
-      ];
-      $("#crtBody").textContent = lines.join("\n");
+<script>
+  // Mechanical readout simulation
+  const lines = [
+    "> READY FOR OPERATOR",
+    "> AWAITING CONNECTION",
+    "> WESTOVER_SIGNAL: STANDBY",
+    "> HIS MERCIES ARE NEW EVERY MORNING"
+  ];
+  let i = 0;
+  setInterval(() => {
+    if(i < lines.length) {
+      document.getElementById('readout').innerHTML += `<br>> ${lines[i]}`;
+      i++;
     }
-    setCrt();
+  }, 2000);
+</script>
 
-    // --- Stripe status (expects your existing backend routes) ---
-    async function refreshStripe(){
-      let connected = false;
-      let mode = "TEST";
-      try{
-        const r = await fetch("/api/stripe/connect/status", { credentials:"include" });
-        const j = await r.json();
-        connected = !!j.connected;
-        mode = (j.mode || "TEST").toUpperCase();
-      } catch(e) {}
-
-      $("#modePill").textContent = mode;
-      $("#statusline").textContent = `mode: ${mode.toLowerCase()}`;
-
-      const conn = $("#stripeConn");
-      conn.dataset.connected = connected ? "1" : "0";
-      $("#stripeMeta").textContent = connected ? "connected" : "disconnected";
-
-      // small “ready” on CRT corner
-      $("#crtSub").textContent = `ROUTER • ${connected ? "STRIPE LINKED" : "READY"}`;
-
-      // update foot hint
-      $("#footHint").textContent = connected
-        ? "stripe linked. you may proceed."
-        : "connect at least one rail to proceed";
-    }
-
-    async function connectStripe(){
-      const r = await fetch("/api/stripe/connect/start", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        credentials:"include"
-      });
-      const j = await r.json();
-      if (j && j.url) window.location.href = j.url;
-      else alert("Stripe connect unavailable.");
-    }
-
-    // --- MetaMask connect (front-end only) ---
-    async function connectMetamask(){
-      if (!window.ethereum) {
-        $("#mmMeta").textContent = "not available";
-        alert("MetaMask not detected.");
-        return;
-      }
-      try{
-        const accounts = await window.ethereum.request({ method:"eth_requestAccounts" });
-        const short = accounts?.[0] ? accounts[0].slice(0,6) + "…" + accounts[0].slice(-4) : "connected";
-        $("#mmConn").dataset.connected = "1";
-        $("#mmMeta").textContent = short;
-        $("#footHint").textContent = "wallet linked.";
-      }catch(e){
-        alert("MetaMask connection cancelled.");
-      }
-    }
-
-    // --- Bank connect (placeholder hook) ---
-    function connectBank(){
-      // Replace with Plaid/Stripe Financial Connections/etc.
-      $("#bankConn").dataset.connected = "1";
-      $("#bankMeta").textContent = "linked";
-      $("#footHint").textContent = "bank linked (stub).";
-      alert("Bank connect is a stub. Hook this to Plaid or Stripe Financial Connections.");
-    }
-
-    document.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-connect]");
-      if (!b) return;
-      const t = b.getAttribute("data-connect");
-
-      if (t === "stripe") connectStripe();
-      if (t === "bank") connectBank();
-      if (t === "metamask") connectMetamask();
-    });
-
-    // if redirected back from Stripe callback
-    const qp = new URLSearchParams(location.search);
-    if (qp.get("connected") === "1") {
-      history.replaceState({}, "", location.pathname);
-    }
-
-    refreshStripe();
-  </script>
 </body>
 </html>
