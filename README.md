@@ -1,4 +1,4 @@
-# HAVEN PAY // 7.01
+# Haven Pay
 ## A quiet interface for creative capital
 
 Haven Pay is not a processor.
