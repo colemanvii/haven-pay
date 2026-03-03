@@ -1,112 +1,410 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Haven Pay</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Haven Pay // 7.01</title>
 
   <style>
-    body {
-      margin: 0;
-      background: #d9d2c3;
-      font-family: monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+    :root{
+      --bg:#d8d1c2;
+      --panel:#e3ddcf;
+      --panelBorder:rgba(0,0,0,.10);
+      --shadow:rgba(0,0,0,.08);
+      --terminal:#050607;
+      --terminalGlow:rgba(35,255,150,.08);
+      --green:#2bff9a;
+      --text:#141414;
+      --muted:rgba(20,20,20,.62);
+      --pill:#9a9a9a;
+      --pillText:#1b1b1b;
+      --action:#c8a46b;
+      --radius:28px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Garamond, Georgia, serif;
     }
 
-    .panel {
-      display: flex;
-      gap: 40px;
-      background: #e7dfcf;
-      padding: 40px;
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 50% 35%, rgba(255,255,255,.35), rgba(255,255,255,0) 60%),
+                  var(--bg);
+      color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
     }
 
-    .terminal {
-      width: 420px;
-      height: 300px;
-      background: black;
-      color: #00ff88;
-      padding: 20px;
-      border-radius: 18px;
-      font-size: 14px;
-      line-height: 1.6;
+    .frame{
+      width:min(1060px, 100%);
+      background: var(--panel);
+      border:1px solid var(--panelBorder);
+      border-radius: 34px;
+      box-shadow: 0 18px 50px var(--shadow);
+      padding: 26px 26px 22px;
+      position:relative;
     }
 
-    .card {
-      width: 260px;
-      font-family: serif;
-    }
-
-    .rail {
-      margin-top: 20px;
-      padding: 14px;
-      background: #f3ede2;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .badge {
-      background: #bbb;
-      padding: 6px 12px;
-      border-radius: 999px;
+    .topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-family: var(--mono);
       font-size: 12px;
+      letter-spacing:.18em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.55);
+      padding: 2px 8px 14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items:stretch;
+    }
+
+    .terminal{
+      background: var(--terminal);
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), 0 10px 30px rgba(0,0,0,.18);
+      overflow:hidden;
+      min-height: 360px;
+      position:relative;
+    }
+
+    .terminal::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(900px 380px at 15% 15%, var(--terminalGlow), rgba(0,0,0,0) 65%),
+                  linear-gradient(to bottom, rgba(255,255,255,.03), rgba(255,255,255,0) 22%);
+      pointer-events:none;
+      mix-blend-mode: screen;
+      opacity:.9;
+    }
+
+    .termHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing:.12em;
+      text-transform: uppercase;
+      color: rgba(43,255,154,.78);
+      border-bottom: 1px solid rgba(43,255,154,.12);
+    }
+
+    .termHeader .right{
+      color: rgba(43,255,154,.55);
+    }
+
+    #readout{
+      padding: 14px 16px 18px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--green);
+      position:relative;
+      z-index:2;
+      min-height: 240px;
+      white-space: normal;
+    }
+
+    .cursor{
+      display:inline-block;
+      width: 10px;
+      height: 16px;
+      border: 1px solid rgba(43,255,154,.6);
+      margin-left:6px;
+      transform: translateY(2px);
+      animation: blink 1.05s steps(2,end) infinite;
+    }
+    @keyframes blink{ 50%{opacity:0;} }
+
+    .card{
+      background: rgba(255,255,255,.55);
+      border:1px solid rgba(0,0,0,.08);
+      border-radius: var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+      padding: 18px 18px 16px;
+      min-height: 360px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .card h1{
+      margin: 0;
+      font-family: var(--serif);
+      font-weight: 600;
+      letter-spacing: .01em;
+      font-size: 34px;
+    }
+
+    .sub{
+      margin: 8px 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .ports{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .port{
+      background: rgba(255,255,255,.55);
+      border:1px solid rgba(0,0,0,.08);
+      border-radius: 18px;
+      padding: 14px 14px;
+      display:grid;
+      grid-template-columns: 1fr auto auto;
+      align-items:center;
+      gap: 12px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .port[data-active="true"]{
+      border-color: rgba(0,0,0,.12);
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+    }
+
+    .portTitle{
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.82);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+    }
+
+    .status-led{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background: rgba(0,0,0,.25);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+    }
+
+    .port[data-active="true"] .status-led{
+      background: rgba(43,255,154,.95);
+      box-shadow: 0 0 0 4px rgba(43,255,154,.14);
+    }
+
+    .pill{
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing:.12em;
+      text-transform: uppercase;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.88);
+      user-select:none;
+      min-width: 92px;
+      text-align:center;
+    }
+
+    .pill.action{
+      background: var(--action);
+      color: rgba(0,0,0,.85);
+    }
+
+    .engage-btn{
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing:.16em;
+      text-transform: uppercase;
+      border: 1px solid rgba(0,0,0,.16);
+      background: rgba(255,255,255,.75);
+      border-radius: 999px;
+      padding: 10px 12px;
+      cursor:pointer;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
+    }
+    .engage-btn:active{ transform: translateY(1px); }
+    .engage-btn[disabled]{ cursor:default; opacity:.55; }
+
+    .footer{
+      margin-top: 16px;
+      text-align:center;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing:.18em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.45);
     }
   </style>
 </head>
 
 <body>
-
-<div class="panel">
-
-  <div class="terminal" id="readout">
-    > INITIALIZING...<br>
-  </div>
-
-  <div class="card">
-    <h2>Haven Pay</h2>
-    <p>Your creative capital rails.</p>
-
-    <div class="rail">
-      <span>STRIPE RAIL</span>
-      <span class="badge" id="stripe-status">OFFLINE</span>
+  <main class="frame">
+    <div class="topline">
+      <div>HAVEN SYSTEMS // 7.01</div>
+      <div>NASHVILLE, TN // 36.1627° N</div>
     </div>
-  </div>
 
-</div>
+    <section class="grid">
+      <!-- TERMINAL -->
+      <div class="terminal">
+        <div class="termHeader">
+          <div>TOM7 // SYSTEM_VOICE</div>
+          <div class="right">ACTIVE</div>
+        </div>
+        <div id="readout">
+          > SIGNAL_LOSS.<br>
+          > CHECK_BACKEND_CONNECTION.<br>
+          > STANDBY.<span class="cursor"></span>
+        </div>
+      </div>
 
-<script>
-const BACKEND_URL = "https://haven-pay-production.up.railway.app";
-const USER_EMAIL = "colecalfee@gmail.com";
+      <!-- CONTROL SURFACE -->
+      <div class="card">
+        <div>
+          <h1>Haven Pay</h1>
+          <div class="sub">
+            Your creative capital rails.<br>
+            Restrained. Reliable. Quiet.
+          </div>
 
-async function syncHaven() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/summary?email=${encodeURIComponent(USER_EMAIL)}`);
-    const data = await res.json();
+          <div class="ports">
+            <div class="port" id="stripe-port" data-active="false">
+              <div class="portTitle">
+                <span class="status-led" id="stripe-led"></span>
+                <span>STRIPE RAIL</span>
+              </div>
 
-    if (data.error) throw new Error(data.error);
+              <div class="pill" id="stripe-status">OFFLINE</div>
 
-    document.getElementById("readout").innerHTML = `
-      > OPERATOR: ${data.name?.toUpperCase() || "UNKNOWN"}<br>
-      > SUBSCRIPTION: ${data.subscription_status?.toUpperCase() || "NONE"}<br>
-      > OPEN_INVOICES: ${data.open_invoice_count || 0}<br>
-      > SYSTEM_READY
-    `;
+              <button class="engage-btn" id="stripe-connect">ENGAGE</button>
+            </div>
 
-    document.getElementById("stripe-status").textContent = "CONNECTED";
-  } catch (err) {
-    document.getElementById("readout").innerHTML =
-      "> SIGNAL_LOSS: CHECK_BACKEND_CONNECTION";
-  }
-}
+            <div class="port" data-active="false">
+              <div class="portTitle"><span class="status-led"></span><span>TREASURY / BANK</span></div>
+              <div class="pill">STUBBED</div>
+              <button class="engage-btn" disabled>ENGAGE</button>
+            </div>
 
-syncHaven();
-</script>
+            <div class="port" data-active="false">
+              <div class="portTitle"><span class="status-led"></span><span>WALLET / ETH</span></div>
+              <div class="pill">STUBBED</div>
+              <button class="engage-btn" disabled>ENGAGE</button>
+            </div>
+          </div>
+        </div>
 
+        <div class="footer">PART OF THE HAVEN IP HOLDING GROUP</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // HAVEN_PAY // LIVE RAILS
+    // Replace with your Railway public domain (no trailing slash)
+    const BACKEND_URL = "https://haven-pay-production.up.railway.app";
+    const USER_EMAIL = "colecalfee@gmail.com";
+
+    function setReadout(lines) {
+      const el = document.getElementById("readout");
+      if (!el) return;
+      el.innerHTML = lines.map(l => `> ${l}`).join("<br>") + '<span class="cursor"></span>';
+    }
+
+    function setStripePort({ connected, pillText, pillIsAction, buttonText, buttonAction }) {
+      const port = document.getElementById("stripe-port");
+      const btn  = document.getElementById("stripe-connect");
+      const pill = document.getElementById("stripe-status");
+
+      if (port) port.setAttribute("data-active", connected ? "true" : "false");
+
+      if (pill) {
+        pill.textContent = pillText;
+        pill.classList.toggle("action", !!pillIsAction);
+      }
+
+      if (btn) {
+        btn.textContent = buttonText;
+        btn.onclick = buttonAction || null;
+        btn.disabled = !buttonAction && buttonText !== "CONNECTED";
+        btn.style.opacity = buttonAction ? "1" : "0.6";
+      }
+    }
+
+    async function syncHaven() {
+      try {
+        setReadout(["TOM7 // SYSTEM_VOICE", "SYNCING_STRIPE...", "STANDBY."]);
+
+        const url = `${BACKEND_URL}/api/summary?email=${encodeURIComponent(USER_EMAIL)}`;
+        const res = await fetch(url, { cache: "no-store" });
+        const data = await res.json();
+
+        if (!data || data.error) throw new Error(data?.error || "BAD_RESPONSE");
+
+        const hasCustomer = !!data.customer_id;
+        const hasPayLink  = !!data?.next_invoice?.url;
+
+        if (!hasCustomer) {
+          setStripePort({
+            connected: false,
+            pillText: "OFFLINE",
+            pillIsAction: false,
+            buttonText: "ENGAGE",
+            buttonAction: null
+          });
+        } else if (hasPayLink) {
+          setStripePort({
+            connected: true,
+            pillText: "ACTION",
+            pillIsAction: true,
+            buttonText: "PAY_INVOICE",
+            buttonAction: () => window.open(data.next_invoice.url, "_blank", "noopener,noreferrer")
+          });
+        } else {
+          setStripePort({
+            connected: true,
+            pillText: "CONNECTED",
+            pillIsAction: false,
+            buttonText: "CONNECTED",
+            buttonAction: null
+          });
+        }
+
+        const lastPay = data.last_payment?.amount ? `$${data.last_payment.amount}` : "NONE";
+
+        setReadout([
+          "TOM7 // SYSTEM_VOICE",
+          `OPERATOR: ${(data.name || "OPERATOR").toUpperCase()}`,
+          `SUBSCRIPTION: ${(data.subscription_status || "none").toUpperCase()}`,
+          `OPEN_INVOICES: ${data.open_invoice_count ?? 0}`,
+          `LAST_PAYMENT: ${lastPay}`,
+          "SYSTEM_READY"
+        ]);
+
+      } catch (err) {
+        console.error("SIGNAL_LOSS:", err);
+        setStripePort({
+          connected: false,
+          pillText: "OFFLINE",
+          pillIsAction: false,
+          buttonText: "ENGAGE",
+          buttonAction: null
+        });
+        setReadout(["SIGNAL_LOSS.", "CHECK_BACKEND_CONNECTION.", "STANDBY."]);
+      }
+    }
+
+    syncHaven();
+  </script>
 </body>
 </html>
