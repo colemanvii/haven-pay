@@ -3,16 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>HavenPay</title>
+  <title>Haven Pay</title>
   <style>
     :root{
       --bg1:#f6efe3; --bg2:#efe6d8;
-      --panel:#f2e9da; --panel2:#efe2d0;
-      --ink:#1f1b16; --muted:#6f655c; --hair:#d9cdbd;
-      --shadow:0 24px 70px rgba(0,0,0,.10);
-      --r:22px; --r2:16px;
-      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
-      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      --tray:#e7dccb; --tray2:#dccfb9;
+      --panel:#f2eadc; --panel2:#ece1cf;
+      --ink:#1f1b16; --muted:#6f655c; --hair:#d6c9b8;
+
+      --green:#4bff9a;
+      --green2:#2eea84;
+
+      --shadow: 0 30px 80px rgba(0,0,0,.12);
+      --shadow2: 0 14px 34px rgba(0,0,0,.10);
+      --r:22px; --r2:16px; --r3:12px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -21,313 +28,369 @@
       font-family:var(--sans);
       color:var(--ink);
       background:
-        radial-gradient(1200px 800px at 30% 10%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%),
+        radial-gradient(1200px 800px at 25% 10%, rgba(255,255,255,.55), rgba(255,255,255,0) 58%),
         radial-gradient(1000px 700px at 70% 30%, rgba(255,255,255,.25), rgba(255,255,255,0) 60%),
         linear-gradient(180deg,var(--bg1),var(--bg2));
       display:grid;
       place-items:center;
       overflow:hidden;
     }
+    /* gentle grain */
     body:before{
       content:"";
       position:fixed; inset:-20%;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
-      opacity:.16;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.24'/%3E%3C/svg%3E");
+      opacity:.14;
       mix-blend-mode:multiply;
       pointer-events:none;
       transform:rotate(1.5deg);
     }
 
-    .wrap{ width:min(680px,92vw); padding:34px 18px; }
+    .wrap{ width:min(980px, 92vw); padding:28px 18px; }
 
-    .panel{
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,0)),
-        linear-gradient(180deg,var(--panel),var(--panel2));
-      border:1px solid rgba(0,0,0,.05);
-      border-radius:var(--r);
-      box-shadow:var(--shadow);
-      overflow:hidden;
+    .tray{
+      background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0)) , linear-gradient(180deg,var(--tray),var(--tray2));
+      border:1px solid rgba(0,0,0,.06);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding:18px;
       position:relative;
     }
-    .panel:after{
+    .tray:after{
       content:"";
       position:absolute; inset:0;
-      border-radius:var(--r);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.03);
+      border-radius:26px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.04);
       pointer-events:none;
     }
 
-    .top{
+    .topbar{
       display:flex;
-      align-items:flex-start;
       justify-content:space-between;
-      gap:14px;
-      padding:18px 18px 12px;
-      border-bottom:1px solid var(--hair);
-    }
-    .brand{
-      display:flex; flex-direction:column; gap:7px;
-      min-width:0;
-    }
-    .brand .name{
-      font:700 12px/1 var(--mono);
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      opacity:.9;
-    }
-    .brand .sub{
-      font:500 10px/1 var(--mono);
+      align-items:center;
+      gap:12px;
+      padding:2px 4px 16px;
+      color:var(--muted);
+      font: 600 10px/1 var(--mono);
       letter-spacing:.18em;
       text-transform:uppercase;
-      color:var(--muted);
+    }
+    .topbar .tag{
+      opacity:.85;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-
-    .right{
+    .topbar .right{
       display:flex;
-      align-items:center;
       gap:10px;
+      align-items:center;
       white-space:nowrap;
     }
+    .dot{opacity:.55}
 
-    .quietlink{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      height:30px;
-      padding:0 10px;
-      border-radius:999px;
-      border:1px solid rgba(0,0,0,.07);
-      background:rgba(255,255,255,.18);
-      text-decoration:none;
-      font:600 10px/1 var(--mono);
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    /* left "crt" panel */
+    .crt{
+      border-radius: var(--r);
+      background: radial-gradient(900px 520px at 40% 20%, rgba(70,255,160,.14), rgba(0,0,0,0) 55%),
+                  linear-gradient(180deg, #0c1411, #070d0b);
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow: var(--shadow2);
+      padding:18px 18px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .crt:before{
+      content:"";
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(
+        180deg,
+        rgba(255,255,255,.03) 0px,
+        rgba(255,255,255,.03) 1px,
+        rgba(0,0,0,0) 3px,
+        rgba(0,0,0,0) 6px
+      );
+      opacity:.18;
+      pointer-events:none;
+      mix-blend-mode:overlay;
+    }
+    .crtHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .crtTitle{
+      font: 700 10px/1 var(--mono);
+      letter-spacing:.24em;
+      text-transform:uppercase;
+      color: rgba(75,255,154,.85);
+    }
+    .crtSub{
+      font: 600 10px/1 var(--mono);
       letter-spacing:.16em;
       text-transform:uppercase;
-      color:var(--muted);
-      opacity:.62;
-      transition:opacity .14s ease, transform .14s ease, background .14s ease;
+      color: rgba(75,255,154,.55);
+      text-align:right;
     }
-    .quietlink:hover{opacity:.95; transform:translateY(-1px); background:rgba(255,255,255,.28);}
-    .quietlink:active{transform:translateY(0);}
+    .crtBody{
+      font: 600 12px/1.55 var(--mono);
+      letter-spacing:.06em;
+      color: rgba(75,255,154,.82);
+      text-shadow: 0 0 14px rgba(46,234,132,.18);
+      white-space:pre-wrap;
+    }
 
+    /* right card */
+    .card{
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,.0)) , linear-gradient(180deg,var(--panel),var(--panel2));
+      border:1px solid rgba(0,0,0,.07);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+      position:relative;
+    }
+    .card:after{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: var(--r);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.03);
+      pointer-events:none;
+    }
+    .cardTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 16px 12px;
+      border-bottom:1px solid var(--hair);
+    }
+    .cardTop .label{
+      font: 700 10px/1 var(--mono);
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .cardTop .mode{
+      font: 700 10px/1 var(--mono);
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--muted);
+      opacity:.85;
+    }
+
+    .welcome{
+      padding:16px;
+    }
+    .welcome h1{
+      margin:0 0 8px 0;
+      font: 650 18px/1.1 var(--sans);
+      letter-spacing:.01em;
+    }
+    .welcome p{
+      margin:0;
+      color:var(--muted);
+      font: 500 12px/1.4 var(--sans);
+    }
+
+    .stack{
+      padding:0 16px 16px;
+      display:grid;
+      gap:10px;
+    }
+
+    .conn{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-radius: var(--r2);
+      border:1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.26);
+      padding:12px 12px;
+    }
+    .connLeft{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .connTitle{
+      font: 750 11px/1 var(--mono);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      opacity:.9;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .connMeta{
+      font: 600 10px/1 var(--mono);
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+      opacity:.9;
+    }
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      height:30px;
-      padding:0 10px;
+      height:32px;
+      padding:0 12px;
       border-radius:999px;
-      border:1px solid rgba(0,0,0,.08);
-      background:rgba(255,255,255,.25);
-      font:600 10px/1 var(--mono);
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
-    .led{
-      width:8px; height:8px; border-radius:999px;
-      background:#c9b8a4;
-      box-shadow:0 0 0 3px rgba(201,184,164,.22);
-    }
-    .pill[data-connected="1"] .led{
-      background:#c8a46b;
-      box-shadow:0 0 0 3px rgba(200,164,107,.22);
-    }
-
-    .main{ padding:18px; }
-
-    /* single monk surface */
-    .surface{
-      border-radius:var(--r2);
-      border:1px solid rgba(0,0,0,.08);
-      background:rgba(255,255,255,.22);
-      overflow:hidden;
-    }
-    .surfaceHead{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:16px 16px;
+      border:1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.35);
       cursor:pointer;
       user-select:none;
-    }
-    .surfaceTitle{
-      display:flex; flex-direction:column; gap:8px;
-      min-width:0;
-    }
-    .surfaceTitle .t{
-      font:700 14px/1.2 var(--sans);
-      letter-spacing:.01em;
-    }
-    .surfaceTitle .m{
-      font:500 11px/1.2 var(--mono);
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .chev{
-      width:34px; height:34px;
-      border-radius:14px;
-      border:1px solid rgba(0,0,0,.08);
-      background:rgba(255,255,255,.26);
-      display:grid; place-items:center;
-      transition:transform .16s ease, background .16s ease;
-      flex:0 0 auto;
-    }
-    .chev svg{opacity:.65}
-    .surface:hover .chev{background:rgba(255,255,255,.34)}
-    .surface[data-open="1"] .chev{transform:rotate(90deg)}
-
-    .divider{
-      height:1px;
-      background:linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,.10), rgba(0,0,0,0));
-      opacity:.55;
-    }
-
-    .surfaceBody{
-      display:none;
-      padding:14px 16px 16px;
-    }
-    .surface[data-open="1"] .surfaceBody{display:block}
-
-    .row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
-      border-top:1px solid rgba(0,0,0,.06);
-    }
-    .row:first-child{border-top:0}
-    .k{
-      font:700 10px/1 var(--mono);
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
-    .v{
-      font:600 11px/1 var(--mono);
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      opacity:.85;
-      text-align:right;
-    }
-
-    .btnPrimary{
-      width:100%;
-      margin-top:12px;
-      height:44px;
-      border-radius:16px;
-      border:1px solid rgba(0,0,0,.10);
-      background:rgba(255,255,255,.38);
-      cursor:pointer;
-      transition:transform .14s ease, background .14s ease;
-      font:700 11px/1 var(--mono);
+      transition: transform .14s ease, background .14s ease, opacity .14s ease;
+      font: 800 10px/1 var(--mono);
       letter-spacing:.18em;
       text-transform:uppercase;
       color:var(--ink);
+      white-space:nowrap;
     }
-    .btnPrimary:hover{transform:translateY(-1px); background:rgba(255,255,255,.50);}
-    .btnPrimary:active{transform:translateY(0);}
+    .pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.50); }
+    .pill:active{ transform: translateY(0); }
 
-    .hint{
-      margin-top:10px;
-      font:500 10px/1.35 var(--mono);
-      letter-spacing:.08em;
-      color:var(--muted);
-      opacity:.85;
+    .led{
+      width:8px; height:8px; border-radius:999px;
+      background:#c9b8a4;
+      box-shadow: 0 0 0 3px rgba(201,184,164,.20);
+      flex:0 0 auto;
+    }
+    .conn[data-connected="1"] .led{
+      background:#c8a46b;
+      box-shadow: 0 0 0 3px rgba(200,164,107,.22);
     }
 
-    .footer{
+    .consolebar{
+      margin-top:14px;
+      border-radius: 18px;
+      border:1px solid rgba(0,0,0,.07);
+      background: rgba(0,0,0,.08);
+      padding:10px 12px;
       display:flex;
-      justify-content:space-between;
       align-items:center;
-      padding:12px 18px 16px;
-      border-top:1px solid var(--hair);
-      color:var(--muted);
-      font:600 10px/1 var(--mono);
-      letter-spacing:.18em;
-      text-transform:uppercase;
+      justify-content:space-between;
+      gap:12px;
     }
-    .footer a{color:var(--muted); text-decoration:none; opacity:.65}
-    .footer a:hover{opacity:.95}
+    .slots{
+      display:flex; gap:6px; align-items:center; min-width:0;
+      overflow:hidden;
+    }
+    .slot{
+      width:38px; height:14px;
+      border-radius:5px;
+      background: rgba(255,255,255,.38);
+      border:1px solid rgba(0,0,0,.08);
+      opacity:.65;
+      flex:0 0 auto;
+    }
+    .slot.on{
+      background: rgba(255,168,56,.9);
+      border-color: rgba(0,0,0,.10);
+      opacity:.95;
+      box-shadow: 0 0 0 2px rgba(255,168,56,.18);
+    }
+    .consoleLabel{
+      font: 800 10px/1 var(--mono);
+      letter-spacing:.20em;
+      text-transform:uppercase;
+      color: rgba(31,27,22,.65);
+      white-space:nowrap;
+    }
 
-    @media (max-width:520px){
-      .right{flex-direction:column; align-items:flex-end; gap:8px}
-      .quietlink,.pill{width:max-content}
+    .tiny{
+      font: 650 10px/1 var(--mono);
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--muted);
+      opacity:.9;
+    }
+
+    @media (max-width: 860px){
+      .grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="panel" role="application" aria-label="HavenPay Mission Panel">
-      <div class="top">
-        <div class="brand">
-          <div class="name">HAVENPAY</div>
-          <div class="sub" id="subline">stripe: disconnected • mode: test</div>
-        </div>
-
+    <div class="tray" role="application" aria-label="Haven Pay">
+      <div class="topbar">
+        <div class="tag">HAVEN PAY</div>
         <div class="right">
-          <a class="quietlink" href="#" data-connect-stripe>CONNECT</a>
-
-          <div class="pill" id="stripePill" data-connected="0" title="Stripe status">
-            <span class="led" aria-hidden="true"></span>
-            <span>STRIPE</span>
-          </div>
+          <span class="tag" id="who">operator</span>
+          <span class="dot">|</span>
+          <span class="tag" id="statusline">mode: test</span>
         </div>
       </div>
 
-      <div class="main">
-        <div class="surface" id="surface" data-open="0">
-          <div class="surfaceHead" id="surfaceHead" aria-expanded="false" role="button" tabindex="0">
-            <div class="surfaceTitle">
-              <div class="t">Pay</div>
-              <div class="m" id="surfaceMeta">tap to open</div>
-            </div>
-            <div class="chev" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
+      <div class="grid">
+        <!-- LEFT: restrained “console” readout -->
+        <div class="crt" aria-label="Haven Systems Readout">
+          <div class="crtHeader">
+            <div class="crtTitle">HAVEN SYSTEMS OF AMERICA</div>
+            <div class="crtSub" id="crtSub">ROUTER • READY</div>
+          </div>
+          <div class="crtBody" id="crtBody"></div>
+        </div>
+
+        <!-- RIGHT: welcome + connectors -->
+        <div class="card" aria-label="Connectors">
+          <div class="cardTop">
+            <div class="label">INSERT ACCESS CARD</div>
+            <div class="mode" id="modePill">TEST</div>
           </div>
 
-          <div class="divider"></div>
+          <div class="welcome">
+            <h1>Welcome to Haven Pay</h1>
+            <p>Connect your rails. Keep the surface quiet.</p>
+          </div>
 
-          <div class="surfaceBody" id="surfaceBody">
-            <div class="row">
-              <div class="k">Default</div>
-              <div class="v" id="defaultValue">HOSTED</div>
-            </div>
-            <div class="row">
-              <div class="k">Flow</div>
-              <div class="v" id="flowValue">CHECKOUT</div>
-            </div>
-            <div class="row">
-              <div class="k">Status</div>
-              <div class="v" id="lockValue">LOCKED</div>
+          <div class="stack">
+            <div class="conn" id="stripeConn" data-connected="0">
+              <div class="connLeft">
+                <div class="connTitle">Connect to Stripe</div>
+                <div class="connMeta"><span class="led" aria-hidden="true"></span> <span id="stripeMeta">disconnected</span></div>
+              </div>
+              <button class="pill" type="button" data-connect="stripe">CONNECT</button>
             </div>
 
-            <button class="btnPrimary" type="button" id="primaryAction" disabled>
-              CREATE PAYMENT LINK
-            </button>
-
-            <div class="hint" id="hint">
-              connect stripe to enable
+            <div class="conn" id="bankConn" data-connected="0">
+              <div class="connLeft">
+                <div class="connTitle">Connect to Bank</div>
+                <div class="connMeta"><span class="led" aria-hidden="true"></span> <span id="bankMeta">not linked</span></div>
+              </div>
+              <button class="pill" type="button" data-connect="bank">CONNECT</button>
             </div>
+
+            <div class="conn" id="mmConn" data-connected="0">
+              <div class="connLeft">
+                <div class="connTitle">Connect to MetaMask</div>
+                <div class="connMeta"><span class="led" aria-hidden="true"></span> <span id="mmMeta">not detected</span></div>
+              </div>
+              <button class="pill" type="button" data-connect="metamask">CONNECT</button>
+            </div>
+
+            <div class="consolebar" aria-label="Console Bar">
+              <div class="slots" aria-hidden="true">
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot on"></div><div class="slot on"></div><div class="slot on"></div><div class="slot on"></div>
+              </div>
+              <div class="consoleLabel">HAVEN CONSOLE // ACTIVE</div>
+            </div>
+
+            <div class="tiny" id="footHint">connect at least one rail to proceed</div>
           </div>
         </div>
-      </div>
-
-      <div class="footer">
-        <div>© <span id="year"></span> HAVENPAY</div>
-        <a href="#" id="contact">CONTACT</a>
       </div>
     </div>
   </div>
@@ -335,46 +398,52 @@
   <script>
     const $ = (s) => document.querySelector(s);
 
-    $("#year").textContent = new Date().getFullYear();
+    // --- CRT text (restrained, not personal) ---
+    function setCrt(){
+      const d = new Date();
+      const date = d.toLocaleDateString(undefined, { weekday:"short", year:"numeric", month:"short", day:"2-digit" });
 
-    function setOpen(open){
-      const el = $("#surface");
-      el.dataset.open = open ? "1" : "0";
-      $("#surfaceHead").setAttribute("aria-expanded", open ? "true" : "false");
-      $("#surfaceMeta").textContent = open ? "tap to close" : "tap to open";
+      const lines = [
+        `DATE: ${date}`,
+        `MODE: Creator`,
+        `SIGNAL: Aligned`,
+        ``,
+        `LAW: WIN = What's Important Now`,
+        `ANCHOR: His mercies are new every morning`,
+        `MANTRA: ゆっくりと、自分らしく`,
+        ``,
+        `SYSTEM NOTE:`,
+        `Keep the board quiet. One move at a time.`
+      ];
+      $("#crtBody").textContent = lines.join("\n");
     }
+    setCrt();
 
-    $("#surfaceHead").addEventListener("click", () => {
-      setOpen($("#surface").dataset.open !== "1");
-    });
-    $("#surfaceHead").addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("#surfaceHead").click(); }
-    });
-
-    async function refreshStripeStatus(){
+    // --- Stripe status (expects your existing backend routes) ---
+    async function refreshStripe(){
       let connected = false;
       let mode = "TEST";
-
       try{
         const r = await fetch("/api/stripe/connect/status", { credentials:"include" });
         const j = await r.json();
         connected = !!j.connected;
         mode = (j.mode || "TEST").toUpperCase();
-      }catch(e){}
+      } catch(e) {}
 
-      $("#stripePill").dataset.connected = connected ? "1" : "0";
-      $("#subline").textContent = `stripe: ${connected ? "connected" : "disconnected"} • mode: ${mode.toLowerCase()}`;
+      $("#modePill").textContent = mode;
+      $("#statusline").textContent = `mode: ${mode.toLowerCase()}`;
 
-      const btn = $("#primaryAction");
-      const hint = $("#hint");
+      const conn = $("#stripeConn");
+      conn.dataset.connected = connected ? "1" : "0";
+      $("#stripeMeta").textContent = connected ? "connected" : "disconnected";
 
-      if (connected){
-        btn.disabled = false;
-        hint.textContent = "ready";
-      } else {
-        btn.disabled = true;
-        hint.textContent = "connect stripe to enable";
-      }
+      // small “ready” on CRT corner
+      $("#crtSub").textContent = `ROUTER • ${connected ? "STRIPE LINKED" : "READY"}`;
+
+      // update foot hint
+      $("#footHint").textContent = connected
+        ? "stripe linked. you may proceed."
+        : "connect at least one rail to proceed";
     }
 
     async function connectStripe(){
@@ -385,32 +454,53 @@
       });
       const j = await r.json();
       if (j && j.url) window.location.href = j.url;
+      else alert("Stripe connect unavailable.");
+    }
+
+    // --- MetaMask connect (front-end only) ---
+    async function connectMetamask(){
+      if (!window.ethereum) {
+        $("#mmMeta").textContent = "not available";
+        alert("MetaMask not detected.");
+        return;
+      }
+      try{
+        const accounts = await window.ethereum.request({ method:"eth_requestAccounts" });
+        const short = accounts?.[0] ? accounts[0].slice(0,6) + "…" + accounts[0].slice(-4) : "connected";
+        $("#mmConn").dataset.connected = "1";
+        $("#mmMeta").textContent = short;
+        $("#footHint").textContent = "wallet linked.";
+      }catch(e){
+        alert("MetaMask connection cancelled.");
+      }
+    }
+
+    // --- Bank connect (placeholder hook) ---
+    function connectBank(){
+      // Replace with Plaid/Stripe Financial Connections/etc.
+      $("#bankConn").dataset.connected = "1";
+      $("#bankMeta").textContent = "linked";
+      $("#footHint").textContent = "bank linked (stub).";
+      alert("Bank connect is a stub. Hook this to Plaid or Stripe Financial Connections.");
     }
 
     document.addEventListener("click", (e) => {
-      const link = e.target.closest("[data-connect-stripe]");
-      if (!link) return;
-      e.preventDefault();
-      connectStripe();
+      const b = e.target.closest("[data-connect]");
+      if (!b) return;
+      const t = b.getAttribute("data-connect");
+
+      if (t === "stripe") connectStripe();
+      if (t === "bank") connectBank();
+      if (t === "metamask") connectMetamask();
     });
 
-    $("#primaryAction").addEventListener("click", async () => {
-      // Replace this with your real flow (create Checkout Session, payment link, invoice, etc.)
-      alert("Hook: create payment link");
-    });
-
-    $("#contact").addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("Hook: contact");
-    });
-
-    // If redirected back from Stripe
+    // if redirected back from Stripe callback
     const qp = new URLSearchParams(location.search);
     if (qp.get("connected") === "1") {
       history.replaceState({}, "", location.pathname);
     }
 
-    refreshStripeStatus();
+    refreshStripe();
   </script>
 </body>
 </html>
