@@ -1,436 +1,383 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Haven Pay — Console</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HavenPay</title>
   <style>
     :root{
-      /* Light (Sahara / paper-warm) */
-      --bg0:#efe6d7;
-      --bg1:#f6eee1;
-      --panel:#f3eadc;
-      --panel2:#efe4d4;
-      --line:rgba(0,0,0,.08);
-      --text:#151515;
-      --muted:rgba(0,0,0,.55);
-      --shadow: 0 18px 55px rgba(0,0,0,.18);
-      --radius:22px;
-      --pad:22px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      --accent:#f39b4a;
-    }
+      --bg1:#f6efe3;
+      --bg2:#efe6d8;
 
-    [data-theme="dark"]{
-      /* Dark (quiet graphite) */
-      --bg0:#0b0d10;
-      --bg1:#12151a;
-      --panel:#101318;
-      --panel2:#0d1015;
-      --line:rgba(255,255,255,.09);
-      --text:#f4f6fb;
-      --muted:rgba(244,246,251,.58);
-      --shadow: 0 22px 70px rgba(0,0,0,.55);
+      --panel:#f3eadc;
+      --panel2:#efe3d2;
+
+      --ink:#1f1b16;
+      --muted:#6f655c;
+      --hair:#d9cdbd;
+
+      --shadow: 0 24px 70px rgba(0,0,0,.10);
+      --radius: 22px;
+      --radius2: 16px;
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
+      font-family:var(--sans);
+      color:var(--ink);
       background:
-        radial-gradient(1200px 900px at 50% 35%, var(--bg1), var(--bg0));
+        radial-gradient(1200px 800px at 30% 10%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%),
+        radial-gradient(1000px 700px at 70% 30%, rgba(255,255,255,.25), rgba(255,255,255,0) 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
       display:grid;
       place-items:center;
+      overflow:hidden;
     }
 
-    .wrap{width:min(760px, 92vw); display:grid; place-items:center;}
+    /* subtle grain */
+    body:before{
+      content:"";
+      position:fixed; inset:-20%;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      opacity:.18;
+      mix-blend-mode:multiply;
+      pointer-events:none;
+      transform:rotate(2deg);
+    }
+
+    .wrap{
+      width:min(640px, 92vw);
+      padding:36px 18px;
+    }
+
     .panel{
-      width:min(540px, 92vw);
-      background:linear-gradient(180deg, var(--panel), var(--panel2));
-      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0)) , linear-gradient(180deg, var(--panel), var(--panel2));
+      border:1px solid rgba(0,0,0,.05);
       border-radius:var(--radius);
-      box-shadow:var(--shadow);
+      box-shadow: var(--shadow);
       overflow:hidden;
       position:relative;
     }
 
+    /* soft inner glow edge */
+    .panel:after{
+      content:"";
+      position:absolute; inset:0;
+      border-radius:var(--radius);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.03);
+      pointer-events:none;
+    }
+
     .top{
-      display:flex; align-items:flex-start; justify-content:space-between;
-      padding:16px var(--pad);
-      border-bottom:1px solid var(--line);
-      gap:18px;
-    }
-    .brand{
-      font-size:12px; letter-spacing:.14em;
-      text-transform:uppercase;
-      font-family:var(--mono);
-      opacity:.9;
-      line-height:1.2;
-    }
-
-    .router{
-      display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:6px;
-      font-family:var(--mono);
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      font-size:12px;
-      color:var(--muted);
-      text-align:right;
-    }
-    .routerline{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-    }
-    .dot{
-      width:7px; height:7px; border-radius:99px;
-      background:var(--accent);
-      box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-      flex:0 0 auto;
-    }
-    .status{
-      opacity:.85;
-      letter-spacing:.10em;
-      white-space:nowrap;
-    }
-
-    .rows{padding:10px 0;}
-    .row{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px;
-      padding:14px var(--pad);
-      border-bottom:1px solid var(--line);
-      text-decoration:none;
-      color:inherit;
-    }
-    .row:last-child{border-bottom:none}
-    .title{
-      font-weight:600;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      font-size:14px;
-    }
-    .sub{
-      margin-top:4px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .chev{
-      color:var(--muted);
-      font-size:18px;
-      line-height:1;
-      transform:translateY(-1px);
-    }
-
-    .view{
-      display:none;
-      padding:16px var(--pad) 18px;
-      border-top:1px solid var(--line);
-      background:color-mix(in srgb, var(--panel) 55%, transparent);
-    }
-    .view.active{display:block}
-
-    .viewhead{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
-      gap:14px;
-      margin-bottom:12px;
+      padding:18px 18px 12px 18px;
+      border-bottom:1px solid var(--hair);
     }
-    .viewtitle{
-      font-family:var(--mono);
+
+    .brand{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .brand .name{
+      font: 700 12px/1 var(--mono);
+      letter-spacing:.22em;
       text-transform:uppercase;
-      letter-spacing:.14em;
-      font-size:12px;
+      opacity:.9;
+    }
+    .brand .sub{
+      font: 500 10px/1 var(--mono);
+      letter-spacing:.18em;
+      text-transform:uppercase;
       color:var(--muted);
     }
+
+    .statusRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-top:1px;
+      text-align:right;
+      white-space:nowrap;
+    }
+
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid var(--line);
-      background:color-mix(in srgb, var(--bg1) 30%, transparent);
-      font-family:var(--mono);
+      border:1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.28);
+      font: 600 10px/1 var(--mono);
+      letter-spacing:.16em;
       text-transform:uppercase;
+      color:var(--muted);
+    }
+    .led{
+      width:8px; height:8px; border-radius:999px;
+      background:#c9b8a4;
+      box-shadow: 0 0 0 3px rgba(201,184,164,.25);
+    }
+    .pill[data-connected="1"] .led{
+      background:#c8a46b;
+      box-shadow: 0 0 0 3px rgba(200,164,107,.22);
+    }
+
+    .quietlink{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font: 600 10px/1 var(--mono);
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      text-decoration:none;
+      color:var(--muted);
+      opacity:.65;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.07);
+      background: rgba(255,255,255,.18);
+      transition: opacity .15s ease, transform .15s ease;
+    }
+    .quietlink:hover{ opacity:.95; transform: translateY(-1px); }
+    .quietlink:active{ transform: translateY(0px); }
+
+    .main{
+      padding:18px;
+    }
+
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 16px;
+      border-radius:var(--radius2);
+      border:1px solid rgba(0,0,0,.07);
+      background: rgba(255,255,255,.25);
+    }
+
+    .heroLeft{
+      display:flex; flex-direction:column; gap:8px;
+      min-width:0;
+    }
+
+    .heroTitle{
+      font: 700 14px/1.2 var(--sans);
+      letter-spacing:.02em;
+    }
+    .heroMeta{
+      font: 500 11px/1.2 var(--mono);
       letter-spacing:.12em;
-      font-size:11px;
-      color:var(--muted);
-      user-select:none;
-    }
-    .pill .mini{
-      width:6px;height:6px;border-radius:99px;
-      background:var(--accent);
-      box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
-    }
-
-    .box{
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px 14px;
-      background:color-mix(in srgb, var(--panel2) 65%, transparent);
-    }
-    .box p{margin:0; font-size:12px; color:var(--muted); line-height:1.5}
-    .kv{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:10px 16px;
-      font-family:var(--mono);
-      font-size:12px;
-      color:var(--muted);
-      letter-spacing:.06em;
-    }
-    .kv b{
-      font-weight:600;
-      color:var(--text);
-      letter-spacing:.08em;
-    }
-
-    .bottom{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:16px var(--pad);
-      border-top:1px solid var(--line);
-      font-size:12px;
-      color:var(--muted);
-      font-family:var(--mono);
-    }
-    .contact{
-      letter-spacing:.10em;
       text-transform:uppercase;
+      color:var(--muted);
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .dot{opacity:.55}
+
+    .actions{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid rgba(0,0,0,.10);
+      background: rgba(255,255,255,.35);
+      border-radius:16px;
+      padding:14px 12px;
+      text-align:left;
+      cursor:pointer;
+      transition: transform .14s ease, background .14s ease, opacity .14s ease;
+      color:var(--ink);
+      position:relative;
+      overflow:hidden;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.48); }
+    .btn:active{ transform: translateY(0px); }
+
+    .btn .k{
+      font: 700 11px/1 var(--mono);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      opacity:.85;
+    }
+    .btn .v{
+      margin-top:6px;
+      font: 500 12px/1.25 var(--sans);
+      color:var(--muted);
+    }
+
+    /* tiny “mission control” detail lines */
+    .btn:before{
+      content:"";
+      position:absolute; inset:auto -20% 0 -20%;
+      height:1px;
+      background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,.10), rgba(0,0,0,0));
+      opacity:.55;
+    }
+
+    .footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 18px 16px 18px;
+      border-top:1px solid var(--hair);
+      color:var(--muted);
+      font: 600 10px/1 var(--mono);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+
+    .footer a{
       color:var(--muted);
       text-decoration:none;
+      opacity:.65;
     }
+    .footer a:hover{ opacity:.95; }
 
-    /* Toggle (simple, no fuss) */
-    .toggle{
-      position:fixed;
-      top:18px; right:18px;
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:color-mix(in srgb, var(--panel) 65%, transparent);
-      backdrop-filter: blur(10px);
-      box-shadow:0 10px 30px rgba(0,0,0,.12);
-      user-select:none;
-    }
-    .toggle span{
-      font-size:12px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      font-family:var(--mono);
-      color:var(--muted);
-    }
-    .switch{
-      width:42px; height:24px; border-radius:999px;
-      border:1px solid var(--line);
-      background:color-mix(in srgb, var(--bg1) 35%, transparent);
-      position:relative;
-    }
-    .knob{
-      width:18px; height:18px; border-radius:99px;
-      position:absolute; top:50%; left:3px;
-      transform:translateY(-50%);
-      background:color-mix(in srgb, var(--text) 12%, white);
-      transition:left .18s ease;
-    }
-    [data-theme="dark"] .knob{ left:21px; }
-
-    /* Tiny hover (still calm) */
-    @media (hover:hover){
-      .row:hover{
-        background:color-mix(in srgb, var(--bg1) 18%, transparent);
-      }
+    /* responsive: stack buttons */
+    @media (max-width:520px){
+      .statusRow{ flex-direction:column; align-items:flex-end; gap:8px; }
+      .actions{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
-
-<body data-theme="light">
-  <div class="toggle" id="toggle" role="button" aria-label="Toggle theme" tabindex="0">
-    <span id="label">LIGHT</span>
-    <div class="switch"><div class="knob"></div></div>
-  </div>
-
+<body>
   <div class="wrap">
-    <div class="panel">
+    <div class="panel" role="application" aria-label="HavenPay">
       <div class="top">
-        <div class="brand">HAVENPAY</div>
+        <div class="brand">
+          <div class="name">HAVENPAY</div>
+          <div class="sub">mission panel</div>
+        </div>
 
-        <div class="router" aria-label="System status">
-          <div class="routerline">
-            <div class="dot" aria-hidden="true"></div>
-            <div>ROUTER</div>
+        <div class="statusRow">
+          <a class="quietlink" href="#" data-connect-stripe>
+            CONNECT STRIPE
+          </a>
+
+          <div class="pill" id="stripePill" data-connected="0" title="Stripe connection status">
+            <span class="led" aria-hidden="true"></span>
+            <span>STRIPE: <span id="stripeStatus">DISCONNECTED</span></span>
           </div>
-          <div class="routerline status" id="statusLine">STRIPE: DISCONNECTED • MODE: TEST</div>
+
+          <div class="pill" title="Mode">
+            <span class="led" aria-hidden="true" style="opacity:.35"></span>
+            <span>MODE: <span id="modeValue">TEST</span></span>
+          </div>
         </div>
       </div>
 
-      <div class="rows" aria-label="Primary routes">
-        <a class="row" href="#pay" data-route="pay">
-          <div>
-            <div class="title">PAY</div>
-            <div class="sub">send • receive • settle</div>
+      <div class="main">
+        <div class="hero">
+          <div class="heroLeft">
+            <div class="heroTitle">Pay</div>
+            <div class="heroMeta">
+              <span id="surfaceHint">send • receive</span>
+              <span class="dot">•</span>
+              <span id="routerHint">router</span>
+            </div>
           </div>
-          <div class="chev">›</div>
-        </a>
+        </div>
 
-        <a class="row" href="#invoices" data-route="invoices">
-          <div>
-            <div class="title">INVOICES</div>
-            <div class="sub">request payment</div>
-          </div>
-          <div class="chev">›</div>
-        </a>
+        <div class="actions" aria-label="Primary actions">
+          <button class="btn" type="button" data-action="send">
+            <div class="k">Send</div>
+            <div class="v">Create a payment link</div>
+          </button>
 
-        <a class="row" href="#activity" data-route="activity">
-          <div>
-            <div class="title">ACTIVITY</div>
-            <div class="sub">system log</div>
-          </div>
-          <div class="chev">›</div>
-        </a>
-
-        <a class="row" href="#vault" data-route="vault">
-          <div>
-            <div class="title">VAULT</div>
-            <div class="sub">balances • keys • limits</div>
-          </div>
-          <div class="chev">›</div>
-        </a>
+          <button class="btn" type="button" data-action="request">
+            <div class="k">Request</div>
+            <div class="v">Collect payment</div>
+          </button>
+        </div>
       </div>
 
-      <!-- Views (minimal placeholders, no framework) -->
-      <section class="view" id="view-pay" aria-label="Pay view">
-        <div class="viewhead">
-          <div class="viewtitle">PAY</div>
-          <div class="pill"><span class="mini"></span><span>READY</span></div>
-        </div>
-        <div class="box">
-          <p>Operator note: this is the send/receive surface. Stripe link-out and hosted checkout land here first.</p>
-          <div class="kv">
-            <div><b>DEFAULT</b></div><div>HOSTED</div>
-            <div><b>FLOW</b></div><div>CHECKOUT</div>
-            <div><b>STATUS</b></div><div>LOCKED</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="view" id="view-invoices" aria-label="Invoices view">
-        <div class="viewhead">
-          <div class="viewtitle">INVOICES</div>
-          <div class="pill"><span class="mini"></span><span>DRAFT</span></div>
-        </div>
-        <div class="box">
-          <p>Request payment. Next: create invoice, list invoices, copy payment link, mark paid.</p>
-          <div class="kv">
-            <div><b>MODEL</b></div><div>MONTHLY</div>
-            <div><b>AMOUNT</b></div><div>$3,333</div>
-            <div><b>STATE</b></div><div>PENDING</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="view" id="view-activity" aria-label="Activity view">
-        <div class="viewhead">
-          <div class="viewtitle">ACTIVITY</div>
-          <div class="pill"><span class="mini"></span><span>LOG</span></div>
-        </div>
-        <div class="box">
-          <p>System log. Next: show events (invoice created, payment received, payout sent).</p>
-          <div class="kv">
-            <div><b>LAST</b></div><div>—</div>
-            <div><b>EVENTS</b></div><div>0</div>
-            <div><b>SYNC</b></div><div>OFF</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="view" id="view-vault" aria-label="Vault view">
-        <div class="viewhead">
-          <div class="viewtitle">VAULT</div>
-          <div class="pill"><span class="mini"></span><span>SAFE</span></div>
-        </div>
-        <div class="box">
-          <p>Balances, keys, limits. Next: show available balance, payouts, and basic guardrails.</p>
-          <div class="kv">
-            <div><b>BALANCE</b></div><div>—</div>
-            <div><b>PAYOUTS</b></div><div>—</div>
-            <div><b>LIMITS</b></div><div>—</div>
-          </div>
-        </div>
-      </section>
-
-      <div class="bottom">
-        <div>© 2026 HAVENPAY</div>
-        <a class="contact" href="#contact">CONTACT</a>
+      <div class="footer">
+        <div>© <span id="year"></span> HAVENPAY</div>
+        <a href="#" data-action="contact">CONTACT</a>
       </div>
     </div>
   </div>
 
   <script>
-    // Theme
-    const root = document.body;
-    const label = document.getElementById("label");
-    const toggle = document.getElementById("toggle");
+    // --- tiny helpers ---
+    const $ = (sel) => document.querySelector(sel);
 
-    const saved = localStorage.getItem("havenpay-theme");
-    if (saved) root.setAttribute("data-theme", saved);
+    $("#year").textContent = new Date().getFullYear();
 
-    function syncLabel(){
-      label.textContent = root.getAttribute("data-theme").toUpperCase();
+    async function refreshStripeStatus(){
+      try{
+        const r = await fetch("/api/stripe/connect/status", { credentials: "include" });
+        const j = await r.json();
+
+        const connected = !!j.connected;
+        $("#stripeStatus").textContent = connected ? "CONNECTED" : "DISCONNECTED";
+        $("#stripePill").dataset.connected = connected ? "1" : "0";
+        $("#modeValue").textContent = (j.mode || "TEST").toUpperCase();
+
+        // quiet UI hint
+        $("#surfaceHint").textContent = connected ? "send • receive" : "connect to enable";
+      }catch(e){
+        $("#stripeStatus").textContent = "DISCONNECTED";
+        $("#stripePill").dataset.connected = "0";
+        $("#modeValue").textContent = "TEST";
+        $("#surfaceHint").textContent = "connect to enable";
+      }
     }
-    syncLabel();
 
-    function flipTheme(){
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      localStorage.setItem("havenpay-theme", next);
-      syncLabel();
+    async function connectStripe(){
+      const r = await fetch("/api/stripe/connect/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+      const j = await r.json();
+      if (j && j.url) window.location.href = j.url;
     }
 
-    toggle.addEventListener("click", flipTheme);
-    toggle.addEventListener("keydown", (e)=> {
-      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flipTheme(); }
+    // wire: connect stripe
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("[data-connect-stripe]");
+      if (!link) return;
+      e.preventDefault();
+      connectStripe();
     });
 
-    // Minimal routing (hash -> view)
-    const routes = ["pay","invoices","activity","vault"];
-    function show(route){
-      routes.forEach(r=>{
-        const el = document.getElementById(`view-${r}`);
-        if (!el) return;
-        el.classList.toggle("active", r === route);
-      });
-      // keep scroll calm
-      document.querySelector(".panel").scrollIntoView({behavior:"smooth", block:"center"});
+    // wire: actions (stub)
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      e.preventDefault();
+
+      const action = btn.getAttribute("data-action");
+      if (action === "send") {
+        alert("SEND: hook this to your payment-link flow.");
+      } else if (action === "request") {
+        alert("REQUEST: hook this to your invoice/request flow.");
+      } else if (action === "contact") {
+        alert("CONTACT: add your email or support route.");
+      }
+    });
+
+    // on load
+    refreshStripeStatus();
+
+    // if redirected back from stripe
+    const qp = new URLSearchParams(location.search);
+    if (qp.get("connected") === "1") {
+      refreshStripeStatus();
+      history.replaceState({}, "", location.pathname);
     }
-
-    function routeFromHash(){
-      const h = (location.hash || "#pay").replace("#","").trim().toLowerCase();
-      return routes.includes(h) ? h : "pay";
-    }
-
-    window.addEventListener("hashchange", ()=> show(routeFromHash()));
-    show(routeFromHash());
-
-    // Status line (placeholder; wire to Stripe later)
-    const statusLine = document.getElementById("statusLine");
-    // You can flip these once Stripe auth is wired:
-    const stripeConnected = false;
-    const mode = "TEST"; // TEST | LIVE
-    statusLine.textContent = `STRIPE: ${stripeConnected ? "CONNECTED" : "DISCONNECTED"} • MODE: ${mode}`;
   </script>
 </body>
 </html>
